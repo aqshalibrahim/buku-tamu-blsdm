@@ -8,11 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Menggunakan Font Poppins -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- SheetJS & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <script>
         tailwind.config = {
@@ -58,7 +60,7 @@
 </head>
 <body class="text-tu-text min-h-screen flex flex-col font-sans">
 
-    <!-- Topbar Admin dengan Header Kuning & Label WITA -->
+    <!-- Topbar Admin -->
     <header class="bg-tu-amber border-b border-[#E3B215] shadow-tu-sm sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-4">
@@ -72,7 +74,6 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Indikator Jam Live dengan WITA -->
                 <div class="hidden sm:flex flex-col items-end bg-white/60 border border-[#E3B215] px-4 py-1.5 rounded-[10px] backdrop-blur-sm">
                     <div class="flex items-center gap-1.5">
                         <div id="liveTime" class="text-[15px] font-bold text-tu-text leading-tight">00:00:00</div>
@@ -88,26 +89,88 @@
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
-        <div class="bg-tu-card rounded-[18px] border border-tu-border shadow-2xl overflow-hidden flex flex-col h-full backdrop-blur-sm">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full space-y-6">
+        
+        <!-- RINGKASAN DATA (METRIC CARDS) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div class="bg-tu-card p-5 rounded-[16px] border border-tu-border shadow-tu-md flex items-center justify-between">
+                <div>
+                    <p class="text-[12px] font-medium text-tu-textSub">Tamu Hari Ini</p>
+                    <h3 class="text-[26px] font-bold text-tu-text mt-0.5" id="statHariIni">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-[12px] bg-tu-amberLight text-tu-amber flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-calendar-day"></i>
+                </div>
+            </div>
+            <div class="bg-tu-card p-5 rounded-[16px] border border-tu-border shadow-tu-md flex items-center justify-between">
+                <div>
+                    <p class="text-[12px] font-medium text-tu-textSub">Tamu Bulan Ini</p>
+                    <h3 class="text-[26px] font-bold text-tu-text mt-0.5" id="statBulanIni">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-[12px] bg-tu-accentLight text-tu-accent flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+            <div class="bg-tu-card p-5 rounded-[16px] border border-tu-border shadow-tu-md flex items-center justify-between">
+                <div>
+                    <p class="text-[12px] font-medium text-tu-textSub">Total Keseluruhan</p>
+                    <h3 class="text-[26px] font-bold text-tu-text mt-0.5" id="statTotal">0</h3>
+                </div>
+                <div class="w-12 h-12 rounded-[12px] bg-[#E2FDCF] text-tu-green flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL GRAFIK STATISTIK -->
+        <div class="bg-tu-card p-6 rounded-[18px] border border-tu-border shadow-tu-md">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="font-bold text-[15px] text-tu-text">Statistik Kunjungan Tamu</h3>
+                    <p class="text-[11.5px] text-tu-textSub">Grafik harian jumlah kunjungan terbaru</p>
+                </div>
+            </div>
+            <div class="relative h-[240px] w-full">
+                <canvas id="guestChart"></canvas>
+            </div>
+        </div>
+
+        <!-- TABEL UTAMA & FILTER PENCARIAN -->
+        <div class="bg-tu-card rounded-[18px] border border-tu-border shadow-tu-md overflow-hidden flex flex-col">
             
-            <div class="p-6 border-b border-tu-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#FAFCFF]">
+            <div class="p-6 border-b border-tu-border flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-[#FAFCFF]">
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-full bg-tu-amberLight text-tu-text flex items-center justify-center text-sm font-bold">
-                        <i class="fa-solid fa-users-viewfinder"></i>
+                        <i class="fa-solid fa-table-list"></i>
                     </div>
                     <div>
                         <h2 class="text-[15px] font-bold text-tu-text mb-0.5">Riwayat Kunjungan Tamu</h2>
                         <p class="text-[12px] text-tu-textSub" id="statusTeks">Menarik data dari server...</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 w-full md:w-auto">
-                    <div class="relative flex-grow md:flex-grow-0">
+
+                <!-- KONTROL FILTER & PENCARIAN -->
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+                    <!-- Filter Waktu -->
+                    <select id="filterWaktu" onchange="applyFilters()" class="px-3.5 py-2 bg-tu-bg border border-tu-border rounded-[10px] text-[12.5px] text-tu-text font-medium outline-none focus:border-tu-accent">
+                        <option value="semua">Semua Waktu</option>
+                        <option value="hari_ini">Hari Ini</option>
+                        <option value="bulan_ini">Bulan Ini</option>
+                    </select>
+
+                    <!-- Filter Tujuan -->
+                    <select id="filterTujuan" onchange="applyFilters()" class="px-3.5 py-2 bg-tu-bg border border-tu-border rounded-[10px] text-[12.5px] text-tu-text font-medium outline-none focus:border-tu-accent">
+                        <option value="semua">Semua Tujuan</option>
+                    </select>
+
+                    <!-- Kolom Pencarian -->
+                    <div class="relative flex-grow sm:flex-grow-0">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-tu-textSub text-xs"></i>
-                        <input type="text" id="searchBox" oninput="filterGuests()" placeholder="Cari nama atau instansi..." class="pl-8 pr-3 py-2 w-full md:w-[240px] bg-tu-bg border border-tu-border rounded-[10px] text-[12.5px] focus:bg-white focus:border-tu-accent outline-none transition-colors">
+                        <input type="text" id="searchBox" oninput="applyFilters()" placeholder="Cari nama / instansi..." class="pl-8 pr-3 py-2 w-full sm:w-[200px] bg-tu-bg border border-tu-border rounded-[10px] text-[12.5px] focus:bg-white focus:border-tu-accent outline-none transition-colors">
                     </div>
-                    <button onclick="exportToExcel()" class="py-2.5 px-4 bg-tu-green hover:bg-[#159643] text-white text-[12.5px] font-medium rounded-[10px] shadow-sm transition-colors whitespace-nowrap flex items-center gap-2">
-                        <i class="fa-solid fa-file-excel"></i> Export Excel
+
+                    <button onclick="exportToExcel()" class="py-2 px-3.5 bg-tu-green hover:bg-[#159643] text-white text-[12.5px] font-medium rounded-[10px] shadow-sm transition-colors whitespace-nowrap flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Export
                     </button>
                 </div>
             </div>
@@ -157,8 +220,9 @@
         let filteredData = [];      
         let currentPage = 1;
         const rowsPerPage = 20;     
+        let myChart = null;
 
-        // FUNGSI JAM REAL-TIME
+        // JAM REAL-TIME
         function updateClock() {
             const now = new Date();
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
@@ -183,15 +247,151 @@
                 .then(res => {
                     if(res.status === 'success') {
                         guestsData = res.data;
-                        filteredData = [...guestsData]; 
-                        currentPage = 1;
-                        renderTable();
+                        updateMetricsAndDropdowns();
+                        applyFilters();
                         status.innerText = `Total ${guestsData.length} kunjungan terdata.`;
                     }
                 })
                 .catch(error => { status.innerText = "Gagal terhubung ke database server."; });
         }
 
+        // MEMPERBARUI RINGKASAN DATA & DROPDOWN TUJUAN
+        // MEMPERBARUI RINGKASAN DATA & DROPDOWN TUJUAN
+        function updateMetricsAndDropdowns() {
+            const now = new Date();
+            const todayDate = now.getDate();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+
+            let countHariIni = 0;
+            let countBulanIni = 0;
+            let tujuanSet = new Set();
+
+            guestsData.forEach(g => {
+                if(g.tujuan) tujuanSet.add(g.tujuan);
+
+                // Parsing tanggal secara fleksibel dari waktu_lengkap atau timestamp
+                let rawDate = g.timestamp || g.waktu_lengkap;
+                if(rawDate) {
+                    let d;
+                    // Jika format string mengandung garis miring atau strip (misal: DD/MM/YYYY atau YYYY-MM-DD)
+                    if(rawDate.includes('/')) {
+                        let parts = rawDate.split(' ')[0].split('/');
+                        // Asumsi format DD/MM/YYYY
+                        d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                    } else {
+                        d = new Date(rawDate);
+                    }
+
+                    if(!isNaN(d.getTime())) {
+                        // Cek Hari Ini
+                        if(d.getDate() === todayDate && d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                            countHariIni++;
+                        }
+                        // Cek Bulan Ini
+                        if(d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                            countBulanIni++;
+                        }
+                    }
+                }
+            });
+
+            // Masukkan nilai hasil hitung ke kartu statistik
+            document.getElementById('statHariIni').innerText = countHariIni;
+            document.getElementById('statBulanIni').innerText = countBulanIni;
+            document.getElementById('statTotal').innerText = guestsData.length;
+
+            // Populate Dropdown Tujuan
+            const selectTujuan = document.getElementById('filterTujuan');
+            let currentSelected = selectTujuan.value;
+            selectTujuan.innerHTML = `<option value="semua">Semua Tujuan</option>`;
+            tujuanSet.forEach(tuj => {
+                selectTujuan.innerHTML += `<option value="${tuj}">${tuj}</option>`;
+            });
+            selectTujuan.value = currentSelected;
+
+            renderChart();
+        }
+
+        // RENDER GRAFIK CHART.JS
+        function renderChart() {
+            // Kelompokkan data per tanggal
+            const dateCountMap = {};
+            guestsData.forEach(g => {
+                let dateKey = g.waktu_lengkap ? g.waktu_lengkap.split(' ')[0] : 'Lainnya';
+                dateCountMap[dateKey] = (dateCountMap[dateKey] || 0) + 1;
+            });
+
+            // Ambil 7 tanggal terakhir
+            const labels = Object.keys(dateCountMap).slice(-7);
+            const dataVals = labels.map(l => dateCountMap[l]);
+
+            const ctx = document.getElementById('guestChart').getContext('2d');
+            if(myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels.length > 0 ? labels : ['Belum ada data'],
+                    datasets: [{
+                        label: 'Jumlah Kunjungan',
+                        data: dataVals.length > 0 ? dataVals : [0],
+                        borderColor: '#007CFF',
+                        backgroundColor: 'rgba(0, 124, 255, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, ticks: { precision: 0 } }
+                    }
+                }
+            });
+        }
+
+        // FILTER GABUNGAN (WAKTU, TUJUAN, PENCARIAN)
+        function applyFilters() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            const filterWaktu = document.getElementById('filterWaktu').value;
+            const filterTujuan = document.getElementById('filterTujuan').value;
+            const now = new Date();
+
+            filteredData = guestsData.filter(g => {
+                // 1. Filter Pencarian Teks
+                const matchQuery = (
+                    (g.nama && g.nama.toLowerCase().includes(query)) || 
+                    (g.institusi && g.institusi.toLowerCase().includes(query)) ||
+                    (g.tujuan && g.tujuan.toLowerCase().includes(query)) ||
+                    (g.kontak && g.kontak.toLowerCase().includes(query))
+                );
+                if (!matchQuery) return false;
+
+                // 2. Filter Tujuan
+                if (filterTujuan !== 'semua' && g.tujuan !== filterTujuan) return false;
+
+                // 3. Filter Waktu
+                if (filterWaktu !== 'semua') {
+                    const d = new Date(g.timestamp || g.waktu_lengkap);
+                    if (filterWaktu === 'hari_ini') {
+                        if (d.getDate() !== now.getDate() || d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+                    } else if (filterWaktu === 'bulan_ini') {
+                        if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false;
+                    }
+                }
+
+                return true;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        // RENDER TABEL DENGAN PAGINASI
         function renderTable() {
             const tbody = document.getElementById('guestTableBody');
             tbody.innerHTML = '';
@@ -241,35 +441,17 @@
         }
 
         function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
+            if (currentPage > 1) { currentPage--; renderTable(); }
         }
 
         function nextPage() {
             const totalPages = Math.ceil(filteredData.length / rowsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                renderTable();
-            }
-        }
-
-        function filterGuests() {
-            const query = document.getElementById('searchBox').value.toLowerCase();
-            filteredData = guestsData.filter(g => 
-                (g.nama && g.nama.toLowerCase().includes(query)) || 
-                (g.institusi && g.institusi.toLowerCase().includes(query)) ||
-                (g.tujuan && g.tujuan.toLowerCase().includes(query)) ||
-                (g.kontak && g.kontak.toLowerCase().includes(query))
-            );
-            currentPage = 1; 
-            renderTable();
+            if (currentPage < totalPages) { currentPage++; renderTable(); }
         }
 
         function exportToExcel() {
-            if(guestsData.length === 0) return alert('Tidak ada data');
-            const excelData = guestsData.map((g, i) => ({
+            if(filteredData.length === 0) return alert('Tidak ada data untuk diexport');
+            const excelData = filteredData.map((g, i) => ({
                 'No': i + 1, 'Waktu': g.waktu_lengkap, 'Nama Tamu': g.nama,
                 'No. Telepon': g.kontak,
                 'Pekerjaan': g.pekerjaan, 'Instansi': g.institusi, 'Tujuan': g.tujuan, 'Keperluan': g.keperluan

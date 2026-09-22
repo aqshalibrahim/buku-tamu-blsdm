@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Buku Tamu</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Menggunakan Font Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tu: {
+                            accent: '#007CFF',
+                            accentDark: '#0064CC',
+                            accentLight: '#EDF3F9',
+                            bg: '#F5F8FC',
+                            card: '#FFFFFF',
+                            text: '#06233F',
+                            textSub: '#6C86A1',
+                            border: '#DCE6F2',
+                            red: '#DC2626',
+                            amber: '#ECBC1E',
+                            green: '#16A34A',
+                            navy: '#002B51'
+                        }
+                    },
+                    boxShadow: {
+                        'tu-sm': '0 1px 2px rgba(0,43,81,.05), 0 1px 3px rgba(0,43,81,.06)'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F8FC; }
+        ::-webkit-scrollbar { height: 6px; width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #DCE6F2; border-radius: 3px; }
+    </style>
+</head>
+<body class="text-tu-text min-h-screen flex flex-col font-sans">
+
+    <!-- Topbar -->
+    <header class="bg-tu-card border-b border-tu-border shadow-tu-sm p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-tu-accentLight text-tu-accent flex items-center justify-center text-sm">
+                    <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
+                <h1 class="text-[15px] font-bold tracking-tight">Admin Buku Tamu</h1>
+            </div>
+            <button onclick="fetchData()" class="bg-tu-accent hover:bg-tu-accentDark text-white px-4 py-2 rounded-[10px] text-[13px] font-medium transition-colors flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Refresh
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
+        <div class="bg-tu-card rounded-[18px] border border-tu-border shadow-tu-sm overflow-hidden flex flex-col h-full">
+            
+            <div class="p-6 border-b border-tu-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-[15px] font-bold text-tu-text mb-0.5">Riwayat Kunjungan</h2>
+                    <p class="text-[12px] text-tu-textSub" id="statusTeks">Menarik data dari server...</p>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div class="relative flex-grow md:flex-grow-0">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-tu-textSub text-xs"></i>
+                        <input type="text" id="searchBox" oninput="filterGuests()" placeholder="Cari nama atau instansi..." class="pl-8 pr-3 py-2 w-full md:w-[220px] bg-tu-bg border border-tu-border rounded-[10px] text-[12.5px] focus:bg-white focus:border-tu-accent outline-none transition-colors">
+                    </div>
+                    <button onclick="exportToExcel()" class="py-2 px-3.5 bg-tu-green hover:bg-[#159643] text-white text-[12.5px] font-medium rounded-[10px] shadow-sm transition-colors whitespace-nowrap flex items-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse" id="guestTable">
+                    <thead>
+                        <tr>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Foto</th>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Waktu & Tanggal</th>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Nama Tamu & Kontak</th>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Pekerjaan / Instansi</th>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Tujuan</th>
+                            <th class="p-4 text-[11px] font-semibold text-tu-textSub uppercase tracking-wider border-b border-tu-border">Keperluan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guestTableBody" class="divide-y divide-tu-border text-[12.5px]">
+                        <!-- Data masuk ke sini -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Komponen Paginasi -->
+            <div class="p-4 border-t border-tu-border bg-[#FAFCFF] flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-[12px] text-tu-textSub font-medium" id="pageInfo">
+                    Menampilkan 0-0 dari 0 baris
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="prevPage()" id="btnPrev" class="px-3.5 py-1.5 bg-white border border-tu-border rounded-[8px] text-[12px] font-medium text-tu-text hover:bg-tu-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Sebelumnya
+                    </button>
+                    <div class="px-3 py-1 bg-tu-accentLight text-tu-accentDark text-[12px] font-bold rounded-[8px]" id="pageIndicator">
+                        1
+                    </div>
+                    <button onclick="nextPage()" id="btnNext" class="px-3.5 py-1.5 bg-white border border-tu-border rounded-[8px] text-[12px] font-medium text-tu-text hover:bg-tu-bg disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                        Selanjutnya <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxOA-Kpdz3ibqThSpJAWmKLE7GzbpITD_CMFbv_da17tnqIF6RtNe0cIWxNrHmeStYM/exec';
+        let guestsData = [];        // Semua data asli dari server
+        let filteredData = [];      // Data setelah difilter pencarian
+        
+        // Konfigurasi Paginasi
+        let currentPage = 1;
+        const rowsPerPage = 20;     // Jumlah baris per halaman
+
+        function escapeHtml(text) { return text ? text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;") : ''; }
+
+        function fetchData() {
+            const status = document.getElementById('statusTeks');
+            status.innerText = "Sedang menarik data terbaru...";
+            
+            fetch(scriptURL)
+                .then(response => response.json())
+                .then(res => {
+                    if(res.status === 'success') {
+                        guestsData = res.data;
+                        filteredData = [...guestsData]; // Salin semua data ke filteredData
+                        currentPage = 1;
+                        renderTable();
+                        status.innerText = `Total ${guestsData.length} kunjungan terdata.`;
+                    }
+                })
+                .catch(error => { status.innerText = "Gagal terhubung ke database server."; });
+        }
+
+        // Fungsi Render Tabel dengan Paginasi
+        function renderTable() {
+            const tbody = document.getElementById('guestTableBody');
+            tbody.innerHTML = '';
+            
+            if(filteredData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-tu-textSub text-[12.5px]">Tidak ada data kunjungan ditemukan.</td></tr>`;
+                updatePaginationControls();
+                return;
+            }
+
+            // Menghitung indeks awal dan akhir untuk halaman ini
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const paginatedData = filteredData.slice(startIndex, endIndex);
+
+            paginatedData.forEach(guest => {
+                let imgTag = guest.foto ? `<a href="${guest.foto}" target="_blank" class="text-tu-accent font-medium hover:underline flex items-center gap-1"><i class="fa-solid fa-image"></i> Lihat</a>` : `<span class="text-tu-textSub opacity-60">-</span>`;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-[#FAFCFF] transition-colors">
+                        <td class="p-4">${imgTag}</td>
+                        <td class="p-4 font-medium text-tu-textSub">${escapeHtml(guest.waktu_lengkap)}</td>
+                        <td class="p-4">
+                            <span class="font-semibold text-tu-text block">${escapeHtml(guest.nama)}</span>
+                            <span class="text-[11.5px] text-tu-textSub flex items-center gap-1.5 mt-0.5"><i class="fa-solid fa-phone text-[10px]"></i> ${escapeHtml(guest.kontak)}</span>
+                        </td>
+                        <td class="p-4"><span class="font-medium text-tu-text block">${escapeHtml(guest.pekerjaan)}</span><span class="text-tu-textSub">${escapeHtml(guest.institusi)}</span></td>
+                        <td class="p-4"><span class="bg-tu-accentLight text-tu-accentDark px-2.5 py-1 rounded-md text-[11px] font-semibold">${escapeHtml(guest.tujuan)}</span></td>
+                        <td class="p-4 text-tu-textSub">${escapeHtml(guest.keperluan)}</td>
+                    </tr>
+                `;
+            });
+
+            updatePaginationControls();
+        }
+
+        // Fungsi Memperbarui Status Tombol Paginasi
+        function updatePaginationControls() {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            
+            // Status Tombol
+            document.getElementById('btnPrev').disabled = (currentPage === 1 || filteredData.length === 0);
+            document.getElementById('btnNext').disabled = (currentPage === totalPages || filteredData.length === 0);
+            
+            // Indikator Halaman
+            document.getElementById('pageIndicator').innerText = totalPages === 0 ? 0 : currentPage;
+
+            // Teks Info Bawah
+            const startIndex = filteredData.length === 0 ? 0 : ((currentPage - 1) * rowsPerPage) + 1;
+            const endIndex = Math.min(currentPage * rowsPerPage, filteredData.length);
+            document.getElementById('pageInfo').innerText = `Menampilkan ${startIndex}-${endIndex} dari ${filteredData.length} baris`;
+        }
+
+        // Navigasi Paginasi
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // Filter Pencarian (reset ke halaman 1 saat mengetik)
+        function filterGuests() {
+            const query = document.getElementById('searchBox').value.toLowerCase();
+            filteredData = guestsData.filter(g => 
+                (g.nama && g.nama.toLowerCase().includes(query)) || 
+                (g.institusi && g.institusi.toLowerCase().includes(query)) ||
+                (g.tujuan && g.tujuan.toLowerCase().includes(query)) ||
+                (g.kontak && g.kontak.toLowerCase().includes(query))
+            );
+            currentPage = 1; // Selalu kembali ke hal. 1 setelah mencari
+            renderTable();
+        }
+
+        function exportToExcel() {
+            if(guestsData.length === 0) return alert('Tidak ada data');
+            const excelData = guestsData.map((g, i) => ({
+                'No': i + 1, 'Waktu': g.waktu_lengkap, 'Nama Tamu': g.nama,
+                'No. Telepon': g.kontak,
+                'Pekerjaan': g.pekerjaan, 'Instansi': g.institusi, 'Tujuan': g.tujuan, 'Keperluan': g.keperluan
+            }));
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data Tamu");
+            XLSX.writeFile(wb, `Rekap_Tamu_BLSDM_${new Date().getTime()}.xlsx`);
+        }
+
+        window.onload = fetchData;
+    </script>
+</body>
+</html>

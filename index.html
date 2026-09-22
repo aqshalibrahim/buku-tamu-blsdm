@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buku Tamu - BLSDM KOMDIGI MANADO</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Menggunakan Font Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tu: {
+                            accent: '#007CFF',
+                            accentDark: '#0064CC',
+                            accentLight: '#EDF3F9',
+                            bg: '#F5F8FC',
+                            card: '#FFFFFF',
+                            text: '#06233F',
+                            textSub: '#6C86A1',
+                            border: '#DCE6F2',
+                            red: '#DC2626',
+                            amber: '#ECBC1E',
+                            navy: '#002B51'
+                        }
+                    },
+                    boxShadow: {
+                        'tu-sm': '0 1px 2px rgba(0,43,81,.05), 0 1px 3px rgba(0,43,81,.06)',
+                        'tu-md': '0 4px 10px rgba(0,43,81,.08), 0 2px 4px rgba(0,43,81,.05)'
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>body { background-color: #F5F8FC; }</style>
+</head>
+<body class="text-tu-text min-h-screen flex flex-col font-sans">
+
+    <!-- Topbar dengan Live Clock -->
+    <header class="bg-tu-card border-b border-tu-border shadow-tu-sm sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <img src="LOGO BLSDM DAN KOMDIGI.png" alt="Logo" class="h-8 w-auto object-contain">
+                    <div>
+                        <h1 class="text-[18px] font-bold tracking-tight text-tu-text leading-tight">BUKU TAMU DIGITAL</h1>
+                        <p class="text-[12.5px] text-tu-textSub font-medium">BLSDM Komdigi Manado</p>
+                    </div>
+                </div>
+                <!-- Indikator Jam Live -->
+                <div class="hidden md:flex flex-col items-end bg-tu-bg border border-tu-border px-4 py-1.5 rounded-[10px]">
+                    <div id="liveTime" class="text-[16px] font-bold text-tu-accent leading-tight">00:00:00</div>
+                    <div id="liveDate" class="text-[11px] font-medium text-tu-textSub">Memuat tanggal...</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex-grow w-full">
+        <div class="bg-tu-card rounded-[18px] border border-tu-border shadow-tu-sm overflow-hidden">
+            
+            <div class="px-7 py-5 border-b border-tu-border flex items-center justify-between bg-[#FAFCFF]">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-tu-accentLight text-tu-accent flex items-center justify-center">
+                        <i class="fa-solid fa-pen-to-square text-sm"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-[15px] text-tu-text">Formulir Pendaftaran Tamu</h2>
+                        <p class="text-[11.5px] text-tu-textSub">Silakan isi data kunjungan Anda dengan lengkap</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="guestForm" onsubmit="handleFormSubmit(event)" class="p-7">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    <!-- Kiri: Input Form -->
+                    <div class="lg:col-span-7 space-y-4">
+                        <div>
+                            <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">Nama Lengkap <span class="text-tu-red">*</span></label>
+                            <input type="text" id="inputNama" required placeholder="Contoh: Ahmad Maulana" class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text transition-colors">
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">Pekerjaan <span class="text-tu-red">*</span></label>
+                                <input type="text" id="inputPekerjaan" required placeholder="Contoh: Mahasiswa" class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">Institusi <span class="text-tu-red">*</span></label>
+                                <input type="text" id="inputInstitusi" required placeholder="Contoh: Universitas Muhammadiyah Gorontalo" class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text transition-colors">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">No. Telepon / WhatsApp <span class="text-tu-red">*</span></label>
+                            <input type="tel" id="inputKontak" required placeholder="Contoh: 081234567890" class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text transition-colors">
+                        </div>
+
+                        <div>
+                            <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">Tujuan (Pegawai Dituju) <span class="text-tu-red">*</span></label>
+                            <input type="text" id="inputTujuan" required placeholder="Contoh: Ibu Qurata" class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text transition-colors">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[12px] font-semibold text-tu-textSub mb-1.5">Keperluan <span class="text-tu-red">*</span></label>
+                            <textarea id="inputKeperluan" rows="3" required placeholder="Contoh: Konsultasi" class="w-full p-3.5 bg-tu-bg border border-tu-border rounded-[10px] focus:bg-white focus:border-tu-accent focus:ring-1 focus:ring-tu-accent outline-none text-[13px] text-tu-text resize-none transition-colors"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Kanan: Kamera & Submit -->
+                    <div class="lg:col-span-5 flex flex-col justify-between space-y-5">
+                        <div class="bg-[#FAFCFF] p-5 rounded-[14px] border border-tu-border">
+                            <label class="text-[12px] font-semibold text-tu-textSub mb-3 flex items-center gap-2"><i class="fa-solid fa-camera text-tu-accent"></i> Swafoto / Foto Tamu</label>
+                            
+                            <div class="relative w-full aspect-video bg-tu-bg rounded-[10px] overflow-hidden flex items-center justify-center border border-tu-border shadow-inner">
+                                <video id="webcam" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+                                <img id="photoPreview" class="w-full h-full object-cover hidden">
+                                <canvas id="canvas" class="hidden"></canvas>
+                                <div id="cameraPlaceholder" class="text-center p-4">
+                                    <i class="fa-solid fa-image text-3xl text-tu-border mb-2"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 grid grid-cols-2 gap-2.5">
+                                <button type="button" onclick="startWebcam()" class="py-2 px-3 bg-tu-accentLight hover:bg-[#DCE6F2] text-tu-accent text-[12px] font-semibold rounded-[8px] transition-colors"><i class="fa-solid fa-video mr-1"></i> Buka Kamera</button>
+                                <button type="button" id="btnCapture" onclick="takeSnapshot()" disabled class="py-2 px-3 bg-tu-amber hover:brightness-95 disabled:opacity-50 text-tu-text text-[12px] font-bold rounded-[8px] transition-all"><i class="fa-solid fa-aperture mr-1"></i> Ambil Foto</button>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" id="btnSubmit" class="w-full py-3.5 px-6 bg-tu-accent hover:bg-tu-accentDark text-white font-semibold text-[13.5px] rounded-[10px] shadow-tu-sm transition-colors flex justify-center items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> Simpan Data Kunjungan
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-tu-text text-white px-5 py-3.5 rounded-[12px] shadow-tu-md flex items-center gap-3 transform translate-y-20 opacity-0 transition-all z-50">
+        <div class="w-6 h-6 rounded-full bg-tu-green flex items-center justify-center text-[10px]"><i class="fa-solid fa-check"></i></div>
+        <p id="toastMessage" class="text-[12.5px] font-medium"></p>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxOA-Kpdz3ibqThSpJAWmKLE7GzbpITD_CMFbv_da17tnqIF6RtNe0cIWxNrHmeStYM/exec';
+        let capturedPhotoData = null;
+        let mediaStream = null;
+
+        // FUNGSI JAM REAL-TIME
+        function updateClock() {
+            const now = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+            const dateOptions = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            
+            document.getElementById('liveTime').innerText = now.toLocaleTimeString('id-ID', timeOptions);
+            document.getElementById('liveDate').innerText = now.toLocaleDateString('id-ID', dateOptions);
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Jalankan sekali saat load pertama
+
+        async function startWebcam() {
+            const video = document.getElementById('webcam');
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                video.srcObject = mediaStream;
+                video.classList.remove('hidden');
+                document.getElementById('cameraPlaceholder').classList.add('hidden');
+                document.getElementById('photoPreview').classList.add('hidden');
+                document.getElementById('btnCapture').disabled = false;
+            } catch (err) { alert('Gagal mengakses kamera.'); }
+        }
+
+        function takeSnapshot() {
+            const video = document.getElementById('webcam');
+            const canvas = document.getElementById('canvas');
+            const preview = document.getElementById('photoPreview');
+            canvas.width = video.videoWidth || 320;
+            canvas.height = video.videoHeight || 240;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            capturedPhotoData = canvas.toDataURL('image/jpeg', 0.8);
+            preview.src = capturedPhotoData;
+            preview.classList.remove('hidden');
+            video.classList.add('hidden');
+            if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+            document.getElementById('btnCapture').disabled = true;
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!capturedPhotoData) return alert('Mohon ambil foto terlebih dahulu!');
+            
+            const btnSubmit = document.getElementById('btnSubmit');
+            btnSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...`;
+            btnSubmit.disabled = true;
+
+            // Mengirim timestamp pengisian ke backend (selain dari backend yang otomatis mencatat jam)
+            const payload = {
+                timestamp: new Date().toISOString(), // TIMESTAMP ditambahkan ke Payload
+                nama: document.getElementById('inputNama').value,
+                pekerjaan: document.getElementById('inputPekerjaan').value,
+                institusi: document.getElementById('inputInstitusi').value,
+                kontak: document.getElementById('inputKontak').value,
+                tujuan: document.getElementById('inputTujuan').value,
+                keperluan: document.getElementById('inputKeperluan').value,
+                foto: capturedPhotoData
+            };
+
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).then(() => {
+                document.getElementById('guestForm').reset();
+                capturedPhotoData = null;
+                document.getElementById('photoPreview').classList.add('hidden');
+                document.getElementById('cameraPlaceholder').classList.remove('hidden');
+                
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMessage').innerText = 'Data kunjungan berhasil disimpan!';
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
+            }).catch(() => alert('Terjadi kesalahan koneksi.'))
+              .finally(() => { btnSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Simpan Data Kunjungan`; btnSubmit.disabled = false; });
+        }
+    </script>
+</body>
+</html>

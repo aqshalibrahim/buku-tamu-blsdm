@@ -158,11 +158,65 @@
             </div>
         </div>
 
+        <!-- KONTROL FILTER LENGKAP & RESPONSIF -->
+        <div class="bg-tu-card p-5 rounded-[18px] shadow-tu-md border border-tu-border space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center">
+                <div>
+                    <label class="block text-[11px] font-semibold text-tu-textSub mb-1">Cari Nama / Instansi</label>
+                    <input type="text" id="searchBox" oninput="applyFilters()" placeholder="Ketik kata kunci..."
+                        class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[12px] text-[12px] text-tu-text outline-none focus:bg-white focus:border-tu-accent font-medium shadow-sm transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-tu-textSub mb-1">Filter Waktu</label>
+                    <select id="filterWaktu" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[12px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent shadow-sm transition-colors">
+                        <option value="semua">Semua Waktu</option>
+                        <option value="hari_ini">Hari Ini</option>
+                        <option value="bulan_ini">Bulan Ini Berjalan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-tu-textSub mb-1">Filter Tujuan</label>
+                    <select id="filterTujuan" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[12px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent shadow-sm transition-colors">
+                        <option value="semua">Semua Tujuan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-tu-textSub mb-1">Dari Tanggal</label>
+                    <input type="date" id="tanggalMulai" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[12px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent shadow-sm cursor-pointer">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-tu-textSub mb-1">Sampai Tanggal</label>
+                    <input type="date" id="tanggalSelesai" onchange="applyFilters()"
+                        class="w-full px-3.5 py-2.5 bg-tu-bg border border-tu-border rounded-[12px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent shadow-sm cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Baris Tombol Aksi -->
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-3 border-t border-tu-border gap-2.5">
+                <button onclick="resetFilter()"
+                    class="w-full sm:w-auto px-4 py-2.5 bg-tu-bg hover:bg-tu-border text-tu-text text-[12px] font-semibold rounded-[12px] border border-tu-border transition-colors flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-filter-circle-xmark"></i> Reset Filter
+                </button>
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button onclick="fetchData()"
+                        class="flex-1 sm:flex-initial px-4 py-2.5 bg-tu-bg hover:bg-tu-border text-tu-text text-[12px] font-semibold rounded-[12px] border border-tu-border transition-colors flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Refresh
+                    </button>
+                    <button onclick="exportToExcel()"
+                        class="flex-1 sm:flex-initial px-4 py-2.5 bg-tu-green hover:bg-[#159643] text-white text-[12px] font-semibold rounded-[12px] shadow-sm transition-colors flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-file-excel"></i> Export Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- TABEL UTAMA & FILTER PENCARIAN -->
         <div class="bg-tu-card rounded-[18px] border border-tu-border shadow-tu-md overflow-hidden flex flex-col">
 
-            <div
-                class="p-6 border-b border-tu-border flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-[#FAFCFF]">
+            <div class="p-5 border-b border-tu-border flex justify-between items-center bg-[#FAFCFF]">
                 <div class="flex items-center gap-3">
                     <div
                         class="w-9 h-9 rounded-full bg-tu-amberLight text-tu-text flex items-center justify-center text-sm font-bold">
@@ -172,47 +226,6 @@
                         <h2 class="text-[15px] font-bold text-tu-text mb-0.5">Riwayat Kunjungan Tamu</h2>
                         <p class="text-[12px] text-tu-textSub" id="statusTeks">Menarik data dari server...</p>
                     </div>
-                </div>
-
-                <!-- KONTROL FILTER & PENCARIAN -->
-                <div class="flex flex-wrap items-center justify-end gap-2.5 w-full lg:w-auto">
-                    <!-- Filter Waktu Cepat -->
-                    <select id="filterWaktu" onchange="applyFilters()"
-                        class="px-3 py-2 bg-tu-bg border border-tu-border rounded-[10px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent transition-colors">
-                        <option value="semua">Semua Waktu</option>
-                        <option value="hari_ini">Hari Ini</option>
-                        <option value="bulan_ini">Bulan Ini Berjalan</option>
-                    </select>
-
-                    <!-- Filter Rentang Tanggal Custom -->
-                    <div
-                        class="flex items-center gap-1.5 bg-tu-bg border border-tu-border px-2.5 py-1.5 rounded-[10px]">
-                        <span class="text-[11px] text-tu-textSub font-medium">Dari:</span>
-                        <input type="date" id="tanggalMulai" onchange="applyFilters()"
-                            class="bg-transparent text-[11.5px] text-tu-text outline-none cursor-pointer">
-                        <span class="text-[11px] text-tu-textSub font-medium">s/d:</span>
-                        <input type="date" id="tanggalSelesai" onchange="applyFilters()"
-                            class="bg-transparent text-[11.5px] text-tu-text outline-none cursor-pointer">
-                    </div>
-
-                    <!-- Filter Tujuan -->
-                    <select id="filterTujuan" onchange="applyFilters()"
-                        class="px-3 py-2 bg-tu-bg border border-tu-border rounded-[10px] text-[12px] text-tu-text font-medium outline-none focus:border-tu-accent transition-colors">
-                        <option value="semua">Semua Tujuan</option>
-                    </select>
-
-                    <!-- Kolom Pencarian -->
-                    <div class="relative flex-grow sm:flex-grow-0">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-tu-textSub text-xs"></i>
-                        <input type="text" id="searchBox" oninput="applyFilters()" placeholder="Cari nama / instansi..."
-                            class="pl-8 pr-3 py-2 w-full sm:w-[170px] bg-tu-bg border border-tu-border rounded-[10px] text-[12px] focus:bg-white focus:border-tu-accent outline-none transition-colors">
-                    </div>
-
-                    <!-- Tombol Export -->
-                    <button onclick="exportToExcel()"
-                        class="py-2 px-3.5 bg-tu-green hover:bg-[#159643] text-white text-[12px] font-medium rounded-[10px] shadow-sm transition-colors whitespace-nowrap flex items-center gap-1.5">
-                        <i class="fa-solid fa-file-excel"></i> Export
-                    </button>
                 </div>
             </div>
 
@@ -271,6 +284,18 @@
         </div>
     </main>
 
+    <footer class=" border-t border-white/10 pt-6 pb-8 text-left text-white/70 text-[12px]">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div>
+                <p class="font-semibold text-white/90">Dasbor Admin Buku Tamu • BLSDM Komdigi Manado</p>
+                <p class="text-[11px] text-white/60 mt-0.5">Kementerian Komunikasi dan Digital Republik Indonesia</p>
+            </div>
+            <div class="flex items-center gap-4 text-[11.5px]">
+                <span>&copy; 2026 Seluruh Hak Cipta Dilindungi</span>
+            </div>
+        </div>
+    </footer>
+
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbxOA-Kpdz3ibqThSpJAWmKLE7GzbpITD_CMFbv_da17tnqIF6RtNe0cIWxNrHmeStYM/exec';
         let guestsData = [];
@@ -310,6 +335,15 @@
                     }
                 })
                 .catch(error => { status.innerText = "Gagal terhubung ke database server."; });
+        }
+
+        function resetFilter() {
+            document.getElementById('searchBox').value = '';
+            document.getElementById('filterWaktu').value = 'semua';
+            document.getElementById('filterTujuan').value = 'semua';
+            document.getElementById('tanggalMulai').value = '';
+            document.getElementById('tanggalSelesai').value = '';
+            applyFilters();
         }
 
         // MEMPERBARUI RINGKASAN DATA & DROPDOWN TUJUAN
